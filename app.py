@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_file
 import os
-from dotenc import load_dotenv
+from dotenv import load_dotenv
 import docx
 from docx.shared import Pt, RGBColor, Inches
 from docx.enum.style import WD_STYLE_TYPE
@@ -259,6 +259,17 @@ def create_word_doc(output_path, formatted_cv, cv_image=None):
         logger.error(f"Error creating Word document: {str(e)}")
         logger.error(f"Problematic CV content: {formatted_cv}")
         raise
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Log the error
+    app.logger.error(f"Unhandled exception: {str(e)}")
+    # Return a generic error message
+    return "An unexpected error occurred. Please try again later.", 500
+
+@app.route('/health')
+def health_check():
+    return "OK", 200
 
 @app.route('/')
 def index():
