@@ -50,8 +50,8 @@ def fix_image_orientation(image):
 def extract_cv_information(cv_text):
     prompt = (
         "You are an AI assistant that extracts and formats information from resumes. "
-        "Given the following CV text, please extract and format ALL relevant information "
-        "into a well-structured, professional-looking resume. Follow these strict guidelines:\n\n"
+        "Given the following CV text, please extract and format ALL relevant information  "
+        "into a well-structured, professional-looking resume. Scan word documents with text in tables better, scan as much as possible. Follow these strict guidelines:\n\n"
         "1. DO NOT summarize, rephrase, or create new categories. Extract the information as-is. At maximum, make grammatical improvements.\n"
         "2. Maintain 95-98% of the original text, correcting only obvious spelling mistakes.\n"
         "3. Preserve the original formatting and structure of the CV as much as possible.\n"
@@ -90,7 +90,6 @@ def extract_cv_information(cv_text):
         logger.error(f"Error in AI processing: {str(e)}")
         raise
 
-# The rest of the code remains the same
 def extract_text_from_pdf(pdf_path):
     try:
         with open(pdf_path, 'rb') as file:
@@ -125,7 +124,16 @@ def extract_image_from_pdf(pdf_path):
 def extract_text_from_docx(docx_path):
     try:
         doc = docx.Document(docx_path)
-        full_text = [para.text for para in doc.paragraphs]
+        full_text = []
+
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    full_text.append(cell.text)
+
         return '\n'.join(full_text)
     except Exception as e:
         logger.error(f"Error extracting text from DOCX: {str(e)}")
@@ -144,6 +152,15 @@ def extract_image_from_docx(docx_path):
     except Exception as e:
         logger.error(f"Error extracting image from DOCX: {str(e)}")
         return None
+
+def clean_and_normalize_text(text):
+    # Remove extra whitespace
+    text = ' '.join(text.split())
+    # Replace multiple newlines with a single newline
+    text = re.sub(r'\n+', '\n', text)
+    # Remove any remaining special characters or non-printable characters
+    text = re.sub(r'[^\x20-\x7E\n]', '', text)
+    return text
 
 def clean_text(text):
     # Remove all unwanted placeholders from the text
@@ -303,6 +320,7 @@ def upload_file():
                 cv_text = extract_text_from_docx(file_path)
                 cv_image = extract_image_from_docx(file_path)
 
+            cv_text = clean_and_normalize_text(cv_text)
             formatted_cv = extract_cv_information(cv_text)
             logger.debug(f"Formatted CV content: {formatted_cv}")
 
