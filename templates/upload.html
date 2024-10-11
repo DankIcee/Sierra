@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sierra - NAAS CV Analyzer</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='naas_logo.jpg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
@@ -298,6 +299,15 @@
         }
 
         @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+
+            .upload-section {
+                padding: 2rem;
+                margin-top: -3rem;
+            }
+
             .features {
                 flex-direction: column;
                 align-items: center;
@@ -305,6 +315,7 @@
 
             .feature {
                 width: 100%;
+                max-width: none;
             }
 
             .footer-content {
@@ -315,11 +326,26 @@
 
             .footer-section {
                 text-align: center;
+                max-width: none;
             }
 
             .footer-section h3::after {
                 left: 50%;
                 transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .upload-area {
+                padding: 1rem;
+            }
+
+            .file-label {
+                padding: 10px 20px;
+            }
+
+            #submit-btn {
+                padding: 10px;
             }
         }
     </style>
@@ -405,6 +431,16 @@
         const loading = document.getElementById('loading');
         const message = document.getElementById('message');
     
+        function handleFileSelect(files) {
+            if (files.length > 0) {
+                selectedFile.textContent = `Selected file: ${files[0].name}`;
+                submitBtn.disabled = false;
+            } else {
+                selectedFile.textContent = '';
+                submitBtn.disabled = true;
+            }
+        }
+    
         document.querySelector('.file-label').addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -427,21 +463,13 @@
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
+            handleFileSelect(e.dataTransfer.files);
             fileInput.files = e.dataTransfer.files;
-            updateFileName();
         });
     
-        fileInput.addEventListener('change', updateFileName);
-    
-        function updateFileName() {
-            if (fileInput.files.length > 0) {
-                selectedFile.textContent = `Selected file: ${fileInput.files[0].name}`;
-                submitBtn.disabled = false;
-            } else {
-                selectedFile.textContent = '';
-                submitBtn.disabled = true;
-            }
-        }
+        fileInput.addEventListener('change', () => {
+            handleFileSelect(fileInput.files);
+        });
     
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -482,6 +510,16 @@
                 submitBtn.disabled = true;
             }
         });
+
+        // Add this function to handle orientation changes
+        function handleOrientationChange() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        // Call the function on load and orientation change
+        window.addEventListener('load', handleOrientationChange);
+        window.addEventListener('orientationchange', handleOrientationChange);
     </script>
 </body>
 </html>
