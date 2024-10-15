@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, send_file
 import os
 from dotenv import load_dotenv
 import docx
-from docx.shared import Pt, Inches
+from docx.shared import Pt, RGBColor, Inches
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_TAB_ALIGNMENT
 from PyPDF2 import PdfReader
@@ -50,10 +50,10 @@ def fix_image_orientation(image):
 def extract_cv_information(cv_text):
     prompt = (
         "You are an AI assistant that extracts and formats information from resumes. "
-        "Given the following CV text, please extract and format ALL relevant information "
+        "Given the following CV text, please extract and format ALL relevant information  "
         "into a well-structured, professional-looking resume. Scan word documents with text in tables better, scan as much as possible. Follow these strict guidelines:\n\n"
         "1. DO NOT summarize, rephrase, or create new categories. Extract the information as-is. At maximum, make grammatical improvements.\n"
-        "2. Preserve the main context and meaning of the original text, correcting obvious spelling and grammatical mistakes, and improving clarity if needed.\n"
+        "2. Maintain 95-98% of the original text, correcting only obvious spelling mistakes.\n"
         "3. Preserve the original formatting and structure of the CV as much as possible.\n"
         "4. Do not create summaries or mini-categories (e.g., don't summarize skills).\n"
         "5. Extract ALL information from the CV, including full sentences and bullet points.\n"
@@ -61,34 +61,21 @@ def extract_cv_information(cv_text):
         "7. Do not add any information that is not present in the original CV.\n"
         "8. Preserve the original order of information as it appears in the CV.\n"
         "9. If there's any mention of preferred position, desired role, career objective, or similar concepts, "
-        "include it under a section called 'Summary'.\n"
+        "include it under a section called 'Career Objective' or 'Preferred Position'.\n"
         "10. Use the following format for structuring the extracted information:\n"
         "[NAME]Full Name\n"
         "[SECTION]Section Heading\n"
         "[COMPANY]Company Name[TAB]Location\n"
         "[JOBTITLE]Job Title[TAB]Date Range\n"
-        "[EDUCATION]Degree or Qualification[TAB]Date\n"
-        "[INSTITUTION]Institution Name[TAB]Location\n"
         "[BULLET]Bullet point\n"
         "[NORMAL]Normal text\n\n"
         "11. Ensure that dates are consistently formatted and placed at the end of the line.\n"
-        "12. Include countries or cities where the person has worked or studied, ensuring they are properly formatted with correct capitalization (e.g., 'Dubai, United Arab Emirates'). Do not include any asterisks or special characters.\n"
-        "13. Remove all contact-based information if possible, also, parent names, passport number, marital status, religion or similar except\n"
-        "14. Combine multiple profile descriptions into a single coherent paragraph under the 'Summary' section.\n"
-        "15. Organize the content in the following order (if available):\n"
-        "    - Summary/Profile information (Name it as 'Summary')\n"
-        "    - Work Experience and etc (Name as 'Experience')\n"
-        "    - Courses\n"
-        "    - Education\n"
-        "    - Languages (only if explicitly mentioned in the CV)\n"
-        "    - Hobbies/Interests (only if explicitly mentioned in the CV)\n"
-        "    - Others\n"
-        "16. If there is any additional information not fitting into the above categories, include it at the end under a section called 'Additional Information' or 'Others'.\n"
-        "17. When listing locations (cities and countries), write them with proper capitalization, and do not include any asterisks or special characters.\n\n"
+        "12. Include countries or cities where the person has worked or studied.\n"
+        "13. Remove all contact-based information if possible, also, parent names, passport number, marital status, religion or similar except\n\n"
         f"CV Text:\n{cv_text}\n\n"
         "Please provide the formatted CV content, ready to be inserted into a Word document. "
         "Remember to maintain the original content as much as possible except information not relevant in a CV."
-        "Remove any generic prompts such as 'Here's your formatted CV' and etc. Just provide the information requested."
+        "Remove any generic prompts such as 'Here's you formatted cv'and etc just provide the information requested" 
     )
 
     try:
@@ -177,10 +164,7 @@ def clean_and_normalize_text(text):
 
 def clean_text(text):
     # Remove all unwanted placeholders from the text
-    text = text.replace("[JOBTITLE]", "").replace("[NORMAL]", "").replace("[TAB]", "\t")
-    # Remove any asterisks
-    text = text.replace("*", "")
-    return text
+    return text.replace("[JOBTITLE]", "").replace("[NORMAL]", "").replace("[BULLET]", "•")
 
 def is_date(text):
     # Simple date pattern matching
@@ -198,124 +182,93 @@ def is_date(text):
 
 def create_word_doc(output_path, formatted_cv, cv_image=None):
     try:
-        # Load the template document
-        doc = docx.Document('templates/naas_template.docx')
+        doc = docx.Document()
 
-        # Assume that the styles are already defined in the template
+        if cv_image:
+            image_stream = io.BytesIO()
+            cv_image.save(image_stream, format="PNG")
+            image_stream.seek(0)
+            doc.add_picture(image_stream, width=Inches(1.5))
+            last_paragraph = doc.paragraphs[-1]
+            last_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
         styles = doc.styles
 
-        # Update styles to ensure all text is black
-        for style in styles:
-            if hasattr(style, 'font'):
-                style.font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Set to black
+        # Style for applicant name
+        name_style = styles.add_style('Name', WD_STYLE_TYPE.PARAGRAPH)
+        name_style.font.size = Pt(18)
+        name_style.font.bold = True
+        name_style.font.name = modern_font
+        name_style.font.color.rgb = RGBColor(0, 0, 139)
+        name_style.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-        # Set up the right tab stop (adjust according to your template's page setup)
-        right_tab_stop = Inches(6)  # Adjust as needed
+        # Style for sections
+        section_style = styles.add_style('Section', WD_STYLE_TYPE.PARAGRAPH)
+        section_style.font.size = Pt(14)
+        section_style.font.bold = True
+        section_style.font.name = modern_font
+        section_style.font.color.rgb = RGBColor(0, 0, 139)
+        section_style.paragraph_format.space_after = Pt(6)
+
+        # Style for companies
+        company_style = styles.add_style('Company', WD_STYLE_TYPE.PARAGRAPH)
+        company_style.font.size = Pt(12)
+        company_style.font.bold = True
+        company_style.font.name = modern_font
+
+        # Style for job titles (italicized)
+        job_title_style = styles.add_style('JobTitle', WD_STYLE_TYPE.PARAGRAPH)
+        job_title_style.font.size = Pt(11)
+        job_title_style.font.italic = True
+        job_title_style.font.name = modern_font
+
+        # Normal style for normal text
+        normal_style = styles['Normal']
+        normal_style.font.size = Pt(11)
+        normal_style.font.name = modern_font
+
+        # Set consistent line spacing
+        for style in [normal_style, section_style, company_style, job_title_style]:
+            style.paragraph_format.space_after = Pt(0)  # Set uniform space after paragraphs
+            style.paragraph_format.line_spacing = 1.0  # Uniform line spacing
+
+        right_tab_stop = Inches(6.5)  # Set up right-aligned tab stop for dates and locations
 
         # Clean and process the text upfront
         cleaned_cv = clean_text(formatted_cv)
 
         lines = cleaned_cv.split('\n')
         applicant_name = ""
-        current_section = ""
-        last_job_title = False
-
-        # Insert the photo at the top
-        if cv_image:
-            image_stream = io.BytesIO()
-            cv_image.save(image_stream, format="PNG")
-            image_stream.seek(0)
-            # Insert image at the beginning of the document
-            doc.add_picture(image_stream, width=Inches(1.5))
-            last_paragraph = doc.paragraphs[-1]
-            last_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
         for line in lines:
             line = line.strip()
             logger.debug(f"Processing line: {line}")
 
             if line.startswith('[NAME]'):
-                p = doc.add_paragraph(line[len('[NAME]'):].strip(), style='Name')
-                p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                p.runs[0].font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure name is black
-                applicant_name = line[len('[NAME]'):].strip()
+                doc.add_paragraph(line[6:], style='Name')
+                applicant_name = line[6:].strip()
             elif line.startswith('[SECTION]'):
-                current_section = line[len('[SECTION]'):].strip().lower()
-                if current_section not in ['languages', 'hobbies', 'interests']:
-                    doc.add_paragraph("")  # Blank line before the section
-                    p = doc.add_paragraph(line[len('[SECTION]'):].strip().upper(), style='Section')
-                    p.runs[0].font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure section header is black
+                doc.add_paragraph("")  # Blank line before the section
+                doc.add_paragraph(line[9:], style='Section')
             elif line.startswith('[COMPANY]'):
-                if last_job_title:
-                    doc.add_paragraph("")  # Add space after each job
                 p = doc.add_paragraph(style='Company')
-                parts = line[len('[COMPANY]'):].split('\t')
-                company_name = parts[0].strip()
-                company_run = p.add_run(company_name)
-                company_run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure company name is black
+                parts = line[9:].split('[TAB]')
+                p.add_run(parts[0].strip())
                 if len(parts) > 1:
-                    location = parts[1].strip()
-                    location = location.replace("*", "")  # Remove asterisks if any
-                    location_run = p.add_run('\t' + location)
-                    location_run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)
-                    location_run.italic = True  # Make location italic
-                p.paragraph_format.tab_stops.add_tab_stop(right_tab_stop, WD_TAB_ALIGNMENT.RIGHT)
-                last_job_title = False
-            elif line.startswith('[JOBTITLE]'):
+                    p.add_run('\t' + parts[1].strip())
+                    p.paragraph_format.tab_stops.add_tab_stop(right_tab_stop, WD_TAB_ALIGNMENT.RIGHT)
+            elif '[TAB]' in line:
                 p = doc.add_paragraph(style='JobTitle')
-                parts = line[len('[JOBTITLE]'):].split('\t')
-                job_title = parts[0].strip()
-                run = p.add_run(job_title)
-                run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure job title is black
-                run.italic = True  # Make job title italic
+                parts = line.split('[TAB]')
+                p.add_run(parts[0].strip())
                 if len(parts) > 1:
-                    date_range = parts[1].strip()
-                    date_run = p.add_run('\t' + date_range)
-                    date_run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)
+                    p.add_run('\t' + parts[1].strip())
                     p.paragraph_format.tab_stops.add_tab_stop(right_tab_stop, WD_TAB_ALIGNMENT.RIGHT)
-                last_job_title = True
-            elif line.startswith('[EDUCATION]'):
-                # In education section, degree or qualification
-                p = doc.add_paragraph(style='Normal')
-                parts = line[len('[EDUCATION]'):].split('\t')
-                degree = parts[0].strip()
-                run = p.add_run(degree)
-                run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure degree is black
-                if len(parts) > 1:
-                    date = parts[1].strip()
-                    date_run = p.add_run('\t' + date)
-                    date_run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)
-                    p.paragraph_format.tab_stops.add_tab_stop(right_tab_stop, WD_TAB_ALIGNMENT.RIGHT)
-            elif line.startswith('[INSTITUTION]'):
-                # Institution name and location
-                p = doc.add_paragraph(style='Normal')
-                parts = line[len('[INSTITUTION]'):].split('\t')
-                institution = parts[0].strip()
-                run = p.add_run(institution)
-                run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure institution name is black
-                run.italic = True  # Make institution name italic
-                if len(parts) > 1:
-                    location = parts[1].strip()
-                    location = location.replace("*", "")  # Remove asterisks if any
-                    location_run = p.add_run(', ' + location)
-                    location_run.font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure location is black
-                    location_run.italic = True  # Make location italic
-                doc.add_paragraph("")  # Add space after each education entry
-            elif line.startswith('[BULLET]'):
+            elif line.startswith('•'):
                 p = doc.add_paragraph(style='List Bullet')
-                p.text = line[len('[BULLET]'):].strip()
-                p.runs[0].font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure bullet point is black
+                p.text = line[1:].strip()  # Remove the bullet character
             elif line:
-                p = doc.add_paragraph(line, style='Normal')
-                p.runs[0].font.color.rgb = docx.shared.RGBColor(0, 0, 0)  # Ensure normal text is black
-            
-            # Add spacing after each company experience
-            if last_job_title and not line.startswith('[COMPANY]') and not line.startswith('[JOBTITLE]') and not line.startswith('[BULLET]'):
-                doc.add_paragraph("")  # Add an empty paragraph for spacing
-                last_job_title = False
-
-        # If there is any remaining content that was not included in the main sections, add it at the end
-        # This can be implemented as needed based on how the content is structured
+                doc.add_paragraph(line, style='Normal')
 
         doc.save(output_path)
         return applicant_name
