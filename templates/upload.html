@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,9 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sierra - NAAS CV Analyzer</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='naas_logo.jpg') }}">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Include the CSS in a <style> tag -->
     <style>
+        /* Root variables */
         :root {
             --primary-color: #0056b3;
             --secondary-color: #4a90e2;
@@ -16,6 +21,7 @@
             --accent-color: #e67e22;
         }
 
+        /* General Styles */
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--background-color);
@@ -28,6 +34,7 @@
             flex-direction: column;
         }
 
+        /* Hero Section */
         .hero-section {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 4rem 0;
@@ -85,6 +92,7 @@
             clip-path: polygon(0 100%, 100% 100%, 100% 0);
         }
 
+        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -92,6 +100,7 @@
             flex-grow: 1;
         }
 
+        /* Upload Section */
         .upload-section {
             background-color: #fff;
             border-radius: 15px;
@@ -112,6 +121,7 @@
             transition: all 0.3s ease;
             margin-bottom: 1.5rem;
             cursor: pointer;
+            position: relative;
         }
 
         .upload-area:hover {
@@ -196,11 +206,48 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* File Selected */
+        .file-selected {
+            text-align: center;
+            padding: 2rem;
+            animation: fadeInUp 0.5s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .remove-file-btn {
+            margin-top: 1rem;
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .remove-file-btn:hover {
+            background: #cf6d1d;
+        }
+
+        /* Features Section */
         .features {
             display: flex;
             justify-content: center;
             gap: 2rem;
             margin-top: 4rem;
+            flex-wrap: wrap;
         }
 
         .feature {
@@ -212,6 +259,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
         }
 
         .feature:hover {
@@ -230,6 +278,7 @@
             color: var(--primary-color);
         }
 
+        /* Footer */
         footer {
             background: linear-gradient(135deg, #1c2331 0%, #24344d 100%);
             color: #ecf0f1;
@@ -244,11 +293,13 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
+            flex-wrap: wrap;
         }
 
         .footer-section {
             flex: 1;
             max-width: 500px;
+            margin-bottom: 2rem;
         }
 
         .footer-section h3 {
@@ -298,6 +349,7 @@
             border-top: 1px solid #34495e;
         }
 
+        /* Media Queries */
         @media (max-width: 768px) {
             h1 {
                 font-size: 3rem;
@@ -351,6 +403,7 @@
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
             <div class="logo-container">
@@ -364,15 +417,24 @@
         <div class="hero-shape"></div>
     </section>
 
+    <!-- Main Container -->
     <div class="container">
+        <!-- Upload Section -->
         <section class="upload-section">
             <h2>Upload Your CV</h2>
             <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
                 <div id="upload-area" class="upload-area">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--secondary-color);"></i>
-                    <p>Drag and drop your CV here or</p>
-                    <label for="file-input" class="file-label">Choose File</label>
-                    <input type="file" name="file" id="file-input" accept=".pdf, .docx" required>
+                    <!-- Upload Content -->
+                    <div id="upload-content">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--secondary-color);"></i>
+                        <p>Drag and drop your CV here or</p>
+                        <label for="file-input" class="file-label">Choose File</label>
+                        <input type="file" name="file" id="file-input" accept=".pdf, .docx, .doc" required>
+                    </div>
+                    <!-- File Selected Content -->
+                    <div id="file-selected" class="file-selected" style="display: none;">
+                        <!-- Content will be inserted dynamically -->
+                    </div>
                 </div>
                 <div id="selected-file"></div>
                 <button type="submit" id="submit-btn" disabled>
@@ -386,6 +448,7 @@
             <div id="message"></div>
         </section>
 
+        <!-- Features Section -->
         <section class="features">
             <div class="feature">
                 <i class="fas fa-robot"></i>
@@ -405,6 +468,7 @@
         </section>
     </div>
 
+    <!-- Footer -->
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -424,10 +488,13 @@
         </div>
     </footer>
 
+    <!-- JavaScript -->
     <script>
         const form = document.getElementById('upload-form');
         const fileInput = document.getElementById('file-input');
         const uploadArea = document.getElementById('upload-area');
+        const uploadContent = document.getElementById('upload-content');
+        const fileSelected = document.getElementById('file-selected');
         const selectedFile = document.getElementById('selected-file');
         const submitBtn = document.getElementById('submit-btn');
         const loading = document.getElementById('loading');
@@ -435,11 +502,46 @@
     
         function handleFileSelect(files) {
             if (files.length > 0) {
-                selectedFile.textContent = `Selected file: ${files[0].name}`;
+                const file = files[0];
+                selectedFile.textContent = `Selected file: ${file.name}`;
                 submitBtn.disabled = false;
+    
+                // Get the file extension
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                let fileIconClass = '';
+    
+                // Determine the icon based on the file extension
+                if (fileExtension === 'pdf') {
+                    fileIconClass = 'fas fa-file-pdf';
+                } else if (fileExtension === 'docx' || fileExtension === 'doc') {
+                    fileIconClass = 'fas fa-file-word';
+                } else {
+                    fileIconClass = 'fas fa-file-alt';
+                }
+    
+                // Update the file selected content
+                fileSelected.innerHTML = `
+                    <i class="${fileIconClass}" style="font-size: 3rem; color: var(--secondary-color);"></i>
+                    <p>${file.name}</p>
+                    <p>File ready to be uploaded</p>
+                    <button type="button" id="remove-file-btn" class="remove-file-btn"><i class="fas fa-times"></i> Remove File</button>
+                `;
+                // Show the file selected content and hide the upload content
+                uploadContent.style.display = 'none';
+                fileSelected.style.display = 'block';
+    
+                // Add event listener to remove file button
+                document.getElementById('remove-file-btn').addEventListener('click', () => {
+                    fileInput.value = '';
+                    handleFileSelect([]);
+                });
             } else {
                 selectedFile.textContent = '';
                 submitBtn.disabled = true;
+    
+                // Show the upload content and hide the file selected content
+                uploadContent.style.display = 'block';
+                fileSelected.style.display = 'none';
             }
         }
     
@@ -510,16 +612,17 @@
                 form.reset();
                 selectedFile.textContent = '';
                 submitBtn.disabled = true;
+                // Reset the upload area
+                handleFileSelect([]);
             }
         });
-
-        // Add this function to handle orientation changes
+    
+        // Handle orientation changes
         function handleOrientationChange() {
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
-
-        // Call the function on load and orientation change
+    
         window.addEventListener('load', handleOrientationChange);
         window.addEventListener('orientationchange', handleOrientationChange);
     </script>
