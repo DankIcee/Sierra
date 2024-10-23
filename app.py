@@ -101,6 +101,7 @@ def extract_cv_information(cv_text):
         "    - All dates and year information\n"
         "Please provide the formatted CV content, ready to be inserted into a Word document. "
         "Remember to maintain the original content as much as possible except information not relevant in a CV."
+        "Do not create a summary if the person has not provided any."
         "Remove any generic prompts such as 'Here's your formatted CV' and etc. Just provide the information requested."
         f"\n\nCV Text:\n{cv_text}"
     )
