@@ -464,7 +464,7 @@ def upload_file():
            applicant_name = create_word_doc(temp_output_path, formatted_cv, cv_image)
 
            if not applicant_name:
-               applicant_name = "Unknown"
+               applicant_name = "CV"
 
            base_filename = f'{applicant_name.replace(" ", "_")}_CV.docx'
            final_output_path = os.path.join(output_folder, base_filename)
