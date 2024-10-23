@@ -14,7 +14,7 @@ import re
 import logging
 
 app = Flask(__name__)
-
+app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -205,7 +205,7 @@ def clean_and_normalize_text(text):
 def clean_text(text):
     if isinstance(text, list):
         text = ' '.join(text)
-    text = text.replace("[JOBTITLE]", "").replace("[NORMAL]", "").replace("[TAB]", "\t")
+    text = text.replace("[NORMAL]", "").replace("[TAB]", "\t")
     text = text.replace("*", "")
     return text
 
@@ -335,9 +335,21 @@ def create_word_doc(output_path, formatted_cv, cv_image=None):
                 previous_line_type = 'company'
 
             elif line.startswith('[JOBTITLE]'):
-                p = doc.add_paragraph(style='CV_JobTitle')
+                # Create paragraph with base style
+                p = doc.add_paragraph()
                 job_info = line[len('[JOBTITLE]'):].strip()
-                p.add_run(job_info)
+                
+                # Apply formatting directly to the run containing the text
+                run = p.add_run(job_info)
+                run.font.name = modern_font
+                run.font.size = Pt(11)
+                run.font.italic = True
+                run.font.color.rgb = RGBColor(0, 0, 0)
+                
+                # Set paragraph properties
+                p.paragraph_format.space_after = Pt(1)
+                p.paragraph_format.line_spacing = 1.0
+                
                 previous_line_type = 'jobtitle'
 
             elif line.startswith('[BULLET]'):

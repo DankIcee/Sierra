@@ -658,8 +658,8 @@
                     <i class="fas fa-cloud-upload-alt"></i>
                     <p class="upload-text">Drag and drop your CV here</p>
                     <p class="upload-text">or</p>
-                    <label for="file-input" class="file-label">Choose File</label>
-                    <input type="file" name="file" id="file-input" accept=".pdf, .docx" required>
+                    <label for="file-input" class="file-label" onclick="event.stopPropagation()">Choose File</label>
+                    <input type="file" name="file" id="file-input" accept=".pdf,.docx,.doc" required>
                 </div>
                 <div id="file-selected" style="display: none;"></div>
             </div>
@@ -785,104 +785,95 @@
         });
 
         // File Upload Handling with improved UX
-        const form = document.getElementById('upload-form');
-        const fileInput = document.getElementById('file-input');
-        const uploadArea = document.getElementById('upload-area');
-        const uploadContent = document.getElementById('upload-content');
-        const fileSelected = document.getElementById('file-selected');
-        const submitBtn = document.getElementById('submit-btn');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const successMessage = document.getElementById('success-message');
+        // File Upload Handling with improved UX
+const form = document.getElementById('upload-form');
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const uploadContent = document.getElementById('upload-content');
+const fileSelected = document.getElementById('file-selected');
+const submitBtn = document.getElementById('submit-btn');
+const loadingOverlay = document.getElementById('loading-overlay');
+const successMessage = document.getElementById('success-message');
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function handleFiles(files) {
+    if (files.length > 0) {
+        const file = files[0];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        
+        if (!['pdf', 'docx', 'doc'].includes(fileExtension)) {
+            alert('Please upload a PDF or Word document (DOCX/DOC) only.');
+            resetUpload();
+            return;
         }
 
-        function handleFileSelect(files) {
-            if (files.length > 0) {
-                const file = files[0];
-                const fileExtension = file.name.split('.').pop().toLowerCase();
-                
-                if (!['pdf', 'docx'].includes(fileExtension)) {
-                    alert('Please upload a PDF or DOCX file only.');
-                    return;
-                }
-
-                const fileIcon = fileExtension === 'pdf' ? 'fa-file-pdf' : 'fa-file-word';
-
-                fileSelected.innerHTML = `
-                    <div class="file-selected animate-fade-in">
-                        <i class="fas ${fileIcon} file-icon"></i>
-                        <div class="file-info">
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${formatFileSize(file.size)}</div>
-                        </div>
-                        <button type="button" class="remove-file-btn">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-
-                uploadContent.style.display = 'none';
-                fileSelected.style.display = 'block';
-                submitBtn.disabled = false;
-
-                document.querySelector('.remove-file-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    resetUpload();
-                });
-            }
+        const maxSize = 30 * 1024 * 1024; // 10MB in bytes
+        if (file.size > maxSize) {
+            alert('File size exceeds 30MB limit. Please choose a smaller file.');
+            resetUpload();
+            return;
         }
 
-        function resetUpload() {
-            fileInput.value = '';
-            uploadContent.style.display = 'block';
-            fileSelected.style.display = 'none';
-            submitBtn.disabled = true;
-        }
-    // Drag and drop handlers with improved visual feedback
-        uploadArea.addEventListener('dragenter', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+        const fileIcon = fileExtension === 'pdf' ? 'fa-file-pdf' : 'fa-file-word';
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+        fileSelected.innerHTML = `
+            <div class="file-selected animate-fade-in">
+                <i class="fas ${fileIcon} file-icon"></i>
+                <div class="file-info">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${formatFileSize(file.size)}</div>
+                </div>
+                <button type="button" class="remove-file-btn" onclick="resetUpload(); event.stopPropagation();">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
 
-        uploadArea.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            if (!uploadArea.contains(e.relatedTarget)) {
-                uploadArea.classList.remove('dragover');
-            }
-        });
+        uploadContent.style.display = 'none';
+        fileSelected.style.display = 'block';
+        submitBtn.disabled = false;
+    }
+}
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            fileInput.files = files;
-            handleFileSelect(files);
-        });
+function resetUpload() {
+    fileInput.value = '';
+    uploadContent.style.display = 'block';
+    fileSelected.style.display = 'none';
+    submitBtn.disabled = true;
+}
 
-        // Click to upload
-        uploadArea.addEventListener('click', () => {
-            if (!fileSelected.style.display || fileSelected.style.display === 'none') {
-                fileInput.click();
-            }
-        });
+// File input change handler
+fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
 
-        fileInput.addEventListener('change', () => {
-            handleFileSelect(fileInput.files);
-        });
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+});
 
-        // Form submission with enhanced error handling and user feedback
-        // Form submission with enhanced error handling and user feedback
+// Handle drag and drop visual feedback
+uploadArea.addEventListener('dragenter', () => uploadArea.classList.add('dragover'));
+uploadArea.addEventListener('dragover', () => uploadArea.classList.add('dragover'));
+uploadArea.addEventListener('dragleave', (e) => {
+    if (!uploadArea.contains(e.relatedTarget)) {
+        uploadArea.classList.remove('dragover');
+    }
+});
+uploadArea.addEventListener('drop', (e) => {
+    uploadArea.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -893,9 +884,9 @@ form.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
     
     // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 30 * 1024 * 1024; // 10MB in bytes
     if (file.size > maxSize) {
-        alert('File size exceeds 10MB limit. Please choose a smaller file.');
+        alert('File size exceeds 30MB limit. Please choose a smaller file.');
         submitBtn.disabled = false;
         return;
     }
