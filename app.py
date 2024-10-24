@@ -14,7 +14,10 @@ import re
 import logging
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024 
+app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024  # 30MB max file size
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['PERMANENT_SESSION_LIFETIME'] = 600  # 10 minutes
+
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -48,90 +51,106 @@ def fix_image_orientation(image):
     return image
 
 def extract_cv_information(cv_text):
-    prompt = (
-        "You are an AI assistant that extracts and formats information from resumes. "
-        "Given the following CV text, please extract and format ALL relevant information "
-        "into a well-structured, professional-looking resume. Only use the information provided in the CV text below. "
-        "Do not add any information that is not present in the given CV. Follow these strict guidelines:\n\n"
-        "1. Extract the information as-is. At maximum, make grammatical improvements or sentence connections when combining 2 sections from the cv provided.\n"
-        "2. Preserve the main context and meaning of the original text, correcting obvious spelling and grammatical mistakes, and improving clarity if needed.\n"
-        "3. Preserve the structure of the CV as much as possible and make sure ALL information from CV is taken.\n"
-        "4. Extract ALL information from the CV, including full sentences and bullet points.\n"
-        "5. Use the exact words and phrases from the original CV whenever possible.\n"
-        "6. Do not add any information that is not present in the original CV.\n"
-        "7. Prioritize avoiding adding more information that is not present in the original CV.\n"
-        "8. Handle educational qualifications thoroughly:\n"
-        "   - Extract ALL degrees, certifications, and qualifications exactly as written\n"
-        "   - Include all certification bodies, institutions, and authorizing organizations\n"
-        "   - Preserve full names of certifying bodies (e.g., 'KHDA, Ministry of Education')\n"
-        "   - Keep complete qualification names (e.g., 'Certified Human Resource Management Professional (CHRMP)')\n"
-        "   - Maintain all location information (e.g., 'Dubai, UAE')\n"
-        "   - Keep certification years/dates\n"
-        "9. Use the following format (BE VERY THOROUGH) for structuring the extracted information:\n"
-        "[NAME]Full Name\n"   
-        "[SECTION]Section Heading\n"
-        "[COMPANY]Company Name, Location\n"
-        "[JOBTITLE]Job Title | Date Range\n"
-        "[BULLET]Bullet point\n"
-        "[EDUCATION]Degree/Qualification Name | Date Range\n"
-        "[INSTITUTION]Institution Name, Location\n"
-        "[CERTBODY]Certifying Body/Authority Details\n"
-        "[CERTIFICATION]Certification Name | Date\n"
-        "[CERTORG]Organization Name, Location\n"
-        "[NORMAL]Normal text\n\n"
-        "10. Ensure that dates are consistently formatted as 'Month Year - Month Year' or 'Month Year - Present' or just 'Year' as appropriate.\n"
-        "11. Include countries or cities where the person has worked or studied, ensuring they are properly formatted with correct capitalization (e.g., 'Dubai, United Arab Emirates'). Do not include any asterisks or special characters.\n"
-        "12. Remove all contact-based information if possible, also, parent names, passport number, marital status, religion or similar.\n"
-        "13. Combine multiple profile descriptions into a single coherent paragraph under the 'Summary' section.\n"
-        "14. Organize the content in the following order (if available):\n"
-        "    - Summary/Profile information/Profile skills/Profile Highlights (Name it as 'Summary')\n"
-        "    - Work Experience and etc (Name as 'Experience')\n"
-        "    - Education and Qualifications (All degrees, certifications, and qualifications)\n"
-        "    - Technical Skills (if exists)\n"
-        "    - Language Proficiency (if explicitly mentioned)\n" 
-        "    - Professional Training (if exists)\n"
-        "    - Awards & Achievements (if exists)\n"
-        "15. For any section not listed above, create an appropriate professional section name.\n"
-        "16. DO NOT use tabs to separate information. Use the '|' character to separate titles and dates.\n"
-        "17. Ensure education entries and certification entries have dates on the same line, separated by ' | '.\n"
-        "18. When processing educational qualifications and certifications, preserve ALL details including:\n"
-        "    - Full qualification names with any abbreviations\n"
-        "    - Complete certification body names\n"
-        "    - All locations and institutions\n"
-        "    - All dates and year information\n"
-        "Please provide the formatted CV content, ready to be inserted into a Word document. "
-        "Remember to maintain the original content as much as possible except information not relevant in a CV."
-        "Do not create a summary if the person has not provided any."
-        "Remove any generic prompts such as 'Here's your formatted CV' and etc. Just provide the information requested."
-        f"\n\nCV Text:\n{cv_text}"
-    )
+    # Split text into chunks if it's too long
+    max_chunk_size = 12000
+    chunks = [cv_text[i:i+max_chunk_size] for i in range(0, len(cv_text), max_chunk_size)]
     
-    try:
-        logger.debug(f"Input CV text: {cv_text[:1000]}...")
+    full_response = []
+    
+    for i, chunk in enumerate(chunks):
+        try:
+            logger.debug(f"Processing chunk {i+1} of {len(chunks)}")
+            
+            prompt = (
+                "You are an AI assistant that extracts and formats information from resumes. "
+                "Given the following CV text, please extract and format ALL relevant information "
+                "into a well-structured, professional-looking resume. Only use the information provided in the CV text below. "
+                "Do not add any information that is not present in the given CV. Follow these strict guidelines:\n\n"
+                "1. Extract the information as-is. At maximum, make grammatical improvements or sentence connections when combining 2 sections from the cv provided.\n"
+                "2. Preserve the main context and meaning of the original text, correcting obvious spelling and grammatical mistakes, and improving clarity if needed.\n"
+                "3. Preserve the structure of the CV as much as possible and make sure ALL information from CV is taken.\n"
+                "4. Extract ALL information from the CV, including full sentences and bullet points.\n"
+                "5. Use the exact words and phrases from the original CV whenever possible.\n"
+                "6. Do not add any information that is not present in the original CV.\n"
+                "7. Prioritize avoiding adding more information that is not present in the original CV.\n"
+                "8. Handle educational qualifications thoroughly:\n"
+                "   - Extract ALL degrees, certifications, and qualifications exactly as written\n"
+                "   - Include all certification bodies, institutions, and authorizing organizations\n"
+                "   - Preserve full names of certifying bodies (e.g., 'KHDA, Ministry of Education')\n"
+                "   - Keep complete qualification names (e.g., 'Certified Human Resource Management Professional (CHRMP)')\n"
+                "   - Maintain all location information (e.g., 'Dubai, UAE')\n"
+                "   - Keep certification years/dates\n"
+                "9. Use the following format (BE VERY THOROUGH) for structuring the extracted information:\n"
+                "[NAME]Full Name\n"   
+                "[SECTION]Section Heading\n"
+                "[COMPANY]Company Name, Location\n"
+                "[JOBTITLE]Job Title | Date Range\n"
+                "[BULLET]Bullet point\n"
+                "[EDUCATION]Degree/Qualification Name | Date Range\n"
+                "[INSTITUTION]Institution Name, Location\n"
+                "[CERTBODY]Certifying Body/Authority Details\n"
+                "[CERTIFICATION]Certification Name | Date\n"
+                "[CERTORG]Organization Name, Location\n"
+                "[NORMAL]Normal text\n\n"
+                "10. Ensure that dates are consistently formatted as 'Month Year - Month Year' or 'Month Year - Present' or just 'Year' as appropriate.\n"
+                "11. Include countries or cities where the person has worked or studied, ensuring they are properly formatted with correct capitalization (e.g., 'Dubai, United Arab Emirates'). Do not include any asterisks or special characters.\n"
+                "12. Remove all contact-based information if possible, also, parent names, passport number, marital status, religion or similar.\n"
+                "13. Combine multiple profile descriptions into a single coherent paragraph under the 'Summary' section.\n"
+                "14. Organize the content in the following order (if available):\n"
+                "    - Summary/Profile information/Profile skills/Profile Highlights (Name it as 'Summary')\n"
+                "    - Work Experience and etc (Name as 'Experience')\n"
+                "    - Education and Qualifications (All degrees, certifications, and qualifications)\n"
+                "    - Technical Skills (if exists)\n"
+                "    - Language Proficiency (if explicitly mentioned)\n" 
+                "    - Professional Training (if exists)\n"
+                "    - Awards & Achievements (if exists)\n"
+                "15. For any section not listed above, create an appropriate professional section name.\n"
+                "16. DO NOT use tabs to separate information. Use the '|' character to separate titles and dates.\n"
+                "17. Ensure education entries and certification entries have dates on the same line, separated by ' | '.\n"
+                "18. When processing educational qualifications and certifications, preserve ALL details including:\n"
+                "    - Full qualification names with any abbreviations\n"
+                "    - Complete certification body names\n"
+                "    - All locations and institutions\n"
+                "    - All dates and year information\n"
+                "Please provide the formatted CV content, ready to be inserted into a Word document. "
+                "Remember to maintain the original content as much as possible except information not relevant in a CV."
+                "Do not create a summary if the person has not provided any."
+                "Remove any generic prompts such as 'Here's your formatted CV' and etc. Just provide the information requested."
+            )
 
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20240620",
-            max_tokens=4096,
-            temperature=0.2,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        logger.debug(f"API Response type: {type(response.content)}")
-        
-        if isinstance(response.content, list) and len(response.content) > 0:
-            if hasattr(response.content[0], 'text'):
-                formatted_cv = response.content[0].text
+            if len(chunks) > 1:
+                prompt += f"\nProcessing part {i+1} of {len(chunks)}. "
+                if i > 0:
+                    prompt += "Continue from previous part without repeating headers. "
+
+            response = client.messages.create(
+                model="claude-3-5-sonnet-20240620",
+                max_tokens=8192,
+                temperature=0.2,
+                messages=[{"role": "user", "content": prompt + f"\n\nCV Text:\n{chunk}"}]
+            )
+            
+            logger.debug(f"API Response type: {type(response.content)}")
+            
+            if isinstance(response.content, list) and len(response.content) > 0:
+                if hasattr(response.content[0], 'text'):
+                    formatted_chunk = response.content[0].text
+                else:
+                    formatted_chunk = str(response.content[0])
             else:
-                formatted_cv = str(response.content[0])
-        else:
-            formatted_cv = str(response.content)
-        
-        logger.debug(f"Formatted CV: {formatted_cv[:1000]}...")
-        
-        return formatted_cv
-    except Exception as e:
-        logger.error(f"Error in AI processing: {str(e)}")
-        raise
+                formatted_chunk = str(response.content)
+            
+            full_response.append(formatted_chunk)
+            logger.debug(f"Processed chunk {i+1}: {formatted_chunk[:1000]}...")
+            
+        except Exception as e:
+            logger.error(f"Error processing chunk {i+1}: {str(e)}")
+            raise
+    
+    # Combine all chunks
+    formatted_cv = '\n'.join(full_response)
+    logger.debug(f"Final formatted CV: {formatted_cv[:1000]}...")
+    return formatted_cv
 
 def extract_text_from_pdf(pdf_path):
     try:
@@ -464,7 +483,7 @@ def upload_file():
            applicant_name = create_word_doc(temp_output_path, formatted_cv, cv_image)
 
            if not applicant_name:
-               applicant_name = "CV"
+               applicant_name = "Unknown"
 
            base_filename = f'{applicant_name.replace(" ", "_")}_CV.docx'
            final_output_path = os.path.join(output_folder, base_filename)
