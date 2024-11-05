@@ -1,0 +1,21 @@
+[phases.setup]
+nixPkgs = [
+  "cmake",
+  "gcc",
+  "python39",
+  "python39Packages.pip",
+  "libopenblas",
+  "gtk3",
+  "pkg-config"
+]
+
+[phases.install]
+cmds = [
+  "python -m venv /opt/venv",
+  ". /opt/venv/bin/activate",
+  "pip install --upgrade pip",
+  "pip install -r requirements.txt"
+]
+
+[start]
+cmd = "gunicorn --bind 0.0.0.0:$PORT app:app"
