@@ -1,0 +1,49 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Directories
+uploads/*
+outputs/*
+Testingv1/
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Logs
+*.log
+app.log
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker
+.dockerignore
+Dockerfile
+
+# Keep these files/folders
+!templates/
+!static/
+!requirements.txt
+!app.py

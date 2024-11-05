@@ -1,7 +1,43 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environment
 venv/
+env/
+
+# Environment Variables
 .env
+
+# Application Directories
 uploads/
 outputs/
 Testingv1/
+
+# Logs
+*.log
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*~
+
+# Build files
+*.egg-info/
+dist/
+build/
+
+# Docker
+.docker/
