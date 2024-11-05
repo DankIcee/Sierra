@@ -1,62 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sierra</title>
+    <title>Sierra - CV Analysis Tool</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='naas_logo.jpg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css">
     <style>
         :root {
-            --gradient-primary: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            --gradient-secondary: linear-gradient(135deg, #60A5FA, #A78BFA);
-            --gradient-success: linear-gradient(135deg, #10B981, #34D399);
-            --primary-color: #3B82F6;
-            --primary-light: #60A5FA;
-            --secondary-color: #10B981;
-            --accent-color: #8B5CF6;
-            --background-color: #F3F4F6;
+            --gradient-hero: linear-gradient(135deg, #4834d4, #686de0);
+            --gradient-sierra: linear-gradient(45deg, #4B0082 10%, #6A00A0 73%, #8000BF 16%, #9400D8 97%);
+            --gradient-card: linear-gradient(to right, #4834d4, #686de0);
+            --primary-color: #4834d4;
+            --primary-light: #686de0;
+            --secondary-color: #686de0;
+            --background-color: #F8FAFC;
             --surface-color: #FFFFFF;
             --text-primary: #1F2937;
-            --text-secondary: #6B7280;
-            --error-color: #EF4444;
-            --success-color: #10B981;
-            --warning-color: #F59E0B;
-            --border-color: #E5E7EB;
+            --text-secondary: #64748B;
+            --error-color: #DC2626;
+            --border-color: #E2E8F0;
             --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --hover-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --glass-background: rgba(255, 255, 255, 0.7);
-            --transition-speed: 0.2s;
-        }
-
-        [data-theme="dark"] {
-            --gradient-primary: linear-gradient(135deg, #60A5FA, #A78BFA);
-            --gradient-secondary: linear-gradient(135deg, #93C5FD, #C4B5FD);
-            --gradient-success: linear-gradient(135deg, #34D399, #6EE7B7);
-            --primary-color: #60A5FA;
-            --primary-light: #93C5FD;
-            --secondary-color: #34D399;
-            --accent-color: #A78BFA;
-            --background-color: #111827;
-            --surface-color: #1F2937;
-            --text-primary: #F9FAFB;
-            --text-secondary: #D1D5DB;
-            --border-color: #374151;
-            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-            --hover-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-            --glass-background: rgba(31, 41, 55, 0.7);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color var(--transition-speed) ease,
-                      color var(--transition-speed) ease,
-                      border-color var(--transition-speed) ease,
-                      box-shadow var(--transition-speed) ease;
         }
 
         body {
@@ -64,144 +36,85 @@
             background-color: var(--background-color);
             color: var(--text-primary);
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Hero Section */
         .hero-section {
-            position: relative;
+            background: var(--gradient-hero);
             padding: 4rem 0 3rem;
-            background: var(--gradient-primary);
-            overflow: hidden;
-        }
-
-        .hero-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            animation: patternMove 20s linear infinite;
-        }
-
-        @keyframes patternMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 60px 60px; }
+            text-align: center;
+            position: relative;
         }
 
         .hero-content {
-            position: relative;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
-            text-align: center;
-            color: white;
         }
 
         .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 3rem;
-            gap: 2rem;
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    perspective: 1000px;
+}
 
         .logo {
             width: 120px;
             height: 120px;
             border-radius: 24px;
-            transition: transform 0.3s ease;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-
-        .logo:hover {
-            transform: scale(1.05) rotate(5deg);
+            animation: logoFloat 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
 
         .hero-title {
-            font-size: 5rem;
-            font-weight: 700;
-            margin: 0;
-            background: linear-gradient(45deg, #fff, #E0E7FF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            letter-spacing: -2px;
-        }
+    font-size: 5rem;
+    font-weight: 700;
+    background: var(--gradient-sierra);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    margin: 0;
+    letter-spacing: -1px;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+    perspective: 1000px;
+    animation: titleFloat 4s ease-in-out infinite;
+    
+    /* Text shadow layering for 3D effect */
+    text-shadow: 
+        1px 1px 1px rgba(255, 255, 255, 0.2),
+        2px 2px 2px rgba(72, 52, 212, 0.05),
+        3px 3px 3px rgba(72, 52, 212, 0.05),
+        4px 4px 4px rgba(72, 52, 212, 0.05);
+    
+    /* Adding a subtle glow */
+    filter: drop-shadow(0 0 10px rgba(220, 214, 255, 0.3));
+}
+
+.hero-title:hover {
+    transform: translateY(-5px) rotateX(5deg);
+    text-shadow: 
+        1px 1px 1px rgba(255, 255, 255, 0.3),
+        2px 2px 2px rgba(72, 52, 212, 0.1),
+        3px 3px 3px rgba(72, 52, 212, 0.1),
+        4px 4px 4px rgba(72, 52, 212, 0.1),
+        8px 8px 8px rgba(72, 52, 212, 0.1);
+    filter: drop-shadow(0 0 15px rgba(220, 214, 255, 0.4));
+}
 
         .tagline {
             font-size: 1.4rem;
             color: rgba(255, 255, 255, 0.9);
-            margin-top: 1.5rem;
-            max-width: 700px;
+            margin-top: 1rem;
+            max-width: 800px;
             margin-left: auto;
             margin-right: auto;
-            line-height: 1.8;
-        }
-
-        .version-badge {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 9999px;
-            backdrop-filter: blur(10px);
-            font-size: 1rem;
-            color: white;
-            margin-top: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* Features Cards */
-        .features-section {
-            margin-top: 5rem;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .feature-card {
-            background: var(--surface-color);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--hover-shadow);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient-primary);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-icon i {
-            font-size: 1.8rem;
-            color: white;
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .feature-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
         }
 
         /* Upload Section */
@@ -212,154 +125,176 @@
             padding: 3rem;
             margin: 4rem auto;
             max-width: 800px;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .upload-title {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .upload-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        .upload-content {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 3rem;
         }
 
         .upload-area {
-            border: 3px dashed var(--border-color);
-            border-radius: 16px;
-            padding: 4rem 2rem;
-            text-align: center;
-            cursor: pointer;
+            border: 2px dashed var(--primary-color);
+            border-radius: 12px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            background: var(--surface-color);
             transition: all 0.3s ease;
-            background: var(--background-color);
+            min-height: 300px;
+            justify-content: center;
         }
 
-        .upload-area.dragover {
-            border-color: var(--primary-color);
-            background: linear-gradient(rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
-            transform: scale(0.99);
+        .upload-area:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
         }
 
-        .upload-area i {
-            font-size: 4rem;
+        .upload-icon {
+            font-size: 3.5rem;
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            opacity: 0.8;
         }
 
         .upload-text {
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 80%;
+            margin: 0 auto;
         }
 
-        .file-label {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: var(--gradient-primary);
+        .file-input {
+            display: none;
+        }
+
+        .choose-file-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: var(--primary-color);
             color: white;
             border-radius: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1.1rem;
+            border: none;
+            font-size: 1rem;
         }
 
-        .file-label:hover {
+        .choose-file-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: var(--hover-shadow);
+            background: var(--secondary-color);
         }
 
-        #file-input {
+        .choose-file-btn:active {
+            transform: translateY(0);
+        }
+
+        /* File Info Display */
+        .file-info {
             display: none;
+            margin-top: 1.5rem;
+            animation: slideDown 0.3s ease-out;
         }
 
-        .file-selected {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: var(--background-color);
-            border-radius: 16px;
+        .file-preview {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
+            background: var(--surface-color);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
-        .file-icon {
-            font-size: 2.5rem;
-            color: var(--primary-color);
+        .file-type-icon {
+            font-size: 2rem;
         }
 
-        .file-info {
+        .file-type-icon.pdf {
+            color: #DC2626;
+        }
+
+        .file-type-icon.word {
+            color: #2563EB;
+        }
+
+        .file-details {
             flex: 1;
             text-align: left;
         }
 
         .file-name {
-            font-weight: 600;
-            font-size: 1.1rem;
+            display: block;
+            font-weight: 500;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .file-size {
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             color: var(--text-secondary);
         }
 
-        .remove-file-btn {
+        .remove-file {
             background: none;
             border: none;
-            color: var(--error-color);
+            color: var(--text-secondary);
             cursor: pointer;
-            padding: 0.75rem;
-            border-radius: 12px;
+            padding: 0.5rem;
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
 
-        .remove-file-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
+        .remove-file:hover {
+            background: #FEE2E2;
+            color: var(--error-color);
         }
 
-        /* Submit Button */
-        #submit-btn {
-            width: 100%;
-            padding: 1.25rem;
-            margin-top: 2rem;
-            background: var(--gradient-primary);
+        .process-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: var(--gradient-hero);
             color: white;
             border: none;
-            border-radius: 16px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        #submit-btn:not(:disabled):hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        #submit-btn:disabled {
-            background: var(--text-secondary);
-            cursor: not-allowed;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
             cursor: pointer;
-            z-index: 100;
-            box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
-            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            width: 100%;
+            justify-content: center;
         }
 
-        .theme-toggle:hover {
+        .process-btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--hover-shadow);
         }
 
-        /* Loading and Success States */
+        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -384,78 +319,194 @@
 
         .loading-card {
             background: var(--surface-color);
-            padding: 3rem;
+            padding: 4rem;
             border-radius: 24px;
             box-shadow: var(--card-shadow);
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
         }
 
-        .loading-spinner {
-            width: 64px;
-            height: 64px;
-            border: 4px solid var(--primary-light);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .progress-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 2rem;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .progress-ring {
+            position: relative;
+        }
+
+        .progress-ring__circle {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle-bg {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 8px;
+        }
+
+        .progress-ring__circle-progress {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 8px;
+            stroke-linecap: round;
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .progress-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .progress-percentage {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
         }
 
         .loading-text {
             font-size: 1.2rem;
             color: var(--text-primary);
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
         }
 
-        .loading-subtext {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .success-message {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100%);
-            background: var(--gradient-success);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            box-shadow: var(--hover-shadow);
+        .processing-steps {
             display: flex;
+            justify-content: space-between;
+            gap: 3rem;
+            padding: 0 2rem;
             align-items: center;
-            gap: 1rem;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            position: relative;
         }
 
-        .success-message.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            flex: 1;
+            position: relative;
+        }
+
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: calc(50% + 30px);
+            width: calc(100% - 30px);
+            height: 2px;
+            background: var(--border-color);
+            transform: translateY(-50%);
+        }
+
+        .step-item.active {
+            color: var(--primary-color);
+        }
+
+        .step-item.active:not(:last-child)::after {
+            background: var(--primary-color);
+        }
+
+        .step-item i {
+            font-size: 1.5rem;
+            background: var(--surface-color);
+            padding: 0.75rem;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .step-item span {
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 2rem;
+            margin-bottom: 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: var(--surface-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-card);
+            transform: scaleX(0);
+            transition: transform 0.4s ease-out;
+            transform-origin: left;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
         }
 
         /* Footer */
         footer {
             background: var(--surface-color);
-            padding: 6rem 2rem 3rem;
-            margin-top: 6rem;
+            padding: 4rem 2rem 2rem;
+            margin-top: auto;
             position: relative;
-            overflow: hidden;
         }
 
-        .footer-pattern {
+        footer::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
-            background: var(--gradient-primary);
+            height: 4px;
+            background: var(--gradient-hero);
         }
 
         .footer-content {
@@ -463,19 +514,13 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 4rem;
+            gap: 3rem;
         }
-
-        .footer-section {
-            padding: 1rem;
-        }
-
         .footer-section h3 {
             font-size: 1.5rem;
-            color: var(--text-primary);
             margin-bottom: 1.5rem;
             position: relative;
-            padding-bottom: 1rem;
+            padding-bottom: 0.5rem;
         }
 
         .footer-section h3::after {
@@ -485,125 +530,49 @@
             left: 0;
             width: 60px;
             height: 3px;
-            background: var(--gradient-primary);
+            background: var(--gradient-hero);
             border-radius: 3px;
         }
 
         .footer-section p {
             color: var(--text-secondary);
             margin-bottom: 1rem;
-            font-size: 1rem;
-            line-height: 1.8;
         }
 
-        .developer-name {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
+        .contact-info {
+            list-style: none;
         }
 
-        .footer-section a {
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
+        .contact-info li {
+            display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
             margin-bottom: 1rem;
-            padding: 0.5rem 0;
         }
 
-        .footer-section a:hover {
+        .contact-info i {
             color: var(--primary-color);
-            transform: translateX(5px);
+            font-size: 1.2rem;
         }
 
-        .footer-bottom {
+        .copyright {
             text-align: center;
             padding-top: 2rem;
-            margin-top: 3rem;
+            margin-top: 2rem;
             border-top: 1px solid var(--border-color);
             color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 4rem;
-            }
-
-            .features-section {
-                padding: 0 1.5rem;
-            }
-
-            .upload-section {
-                margin: 4rem 1.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 3.5rem;
-            }
-
-            .logo {
-                width: 100px;
-                height: 100px;
-            }
-
-            .tagline {
-                font-size: 1.2rem;
-            }
-
-            .features-section {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .upload-section {
-                padding: 2rem;
-            }
-
-            .upload-area {
-                padding: 2rem 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-title {
-                font-size: 2.8rem;
-            }
-
-            .logo {
-                width: 80px;
-                height: 80px;
-            }
-
-            .tagline {
-                font-size: 1.1rem;
-            }
-
-            .upload-area {
-                padding: 2rem 1rem;
-            }
-
-            .file-label {
-                padding: 0.75rem 1.5rem;
-            }
-
-            .theme-toggle {
-                top: 1rem;
-                right: 1rem;
-                padding: 0.75rem;
-            }
         }
 
         /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes logoFloat {
+            0%, 100% { 
+                transform: translateY(0); 
+                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            50% { 
+                transform: translateY(-8px);
+                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            }
         }
 
         @keyframes slideUp {
@@ -617,394 +586,331 @@
             }
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease forwards;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .animate-slide-up {
-            animation: slideUp 0.5s ease forwards;
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .tagline {
+                font-size: 1.2rem;
+            }
+
+            .upload-section {
+                margin: 2rem 1rem;
+                padding: 1.5rem;
+            }
+
+            .upload-content {
+                padding: 1.5rem;
+            }
+
+            .upload-area {
+                padding: 2rem;
+                min-height: 250px;
+            }
+
+            .processing-steps {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 0;
+            }
+
+            .step-item:not(:last-child)::after {
+                display: none;
+            }
+
+            .loading-card {
+                padding: 2rem;
+            }
+
+            .features-section {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-        <i class="fas fa-moon"></i>
-    </button>
-
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-pattern"></div>
         <div class="hero-content">
-            <div class="logo-container animate-fade-in">
+            <div class="logo-container">
                 <img src="{{ url_for('static', filename='naas_logo.jpg') }}" alt="NAAS Logo" class="logo">
                 <h1 class="hero-title">Sierra</h1>
             </div>
-            <p class="tagline animate-slide-up">Revolutionizing Recruitment with AI-Powered Resume Analysis</p>
-            
-            <div class="version-badge animate-slide-up">
-                <i class="fas fa-code-branch"></i> Beta Version 0.90
-            </div>
+            <p class="tagline">Revolutionizing Recruitment with AI-Powered Resume Analysis</p>
         </div>
     </section>
 
-    
-
     <!-- Upload Section -->
-    <section class="upload-section animate-slide-up">
+    <section class="upload-section">
+        <h2 class="upload-title">Upload your CV</h2>
+        <p class="upload-subtitle">PDF or Word documents only</p>
+        
         <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
-            <div id="upload-area" class="upload-area">
-                <div id="upload-content">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p class="upload-text">Drag and drop your CV here</p>
-                    <p class="upload-text">or</p>
-                    <label for="file-input" class="file-label" onclick="event.stopPropagation()">Choose File</label>
-                    <input type="file" name="file" id="file-input" accept=".pdf,.docx,.doc" required>
+            <div class="upload-content">
+                <div class="upload-area" id="upload-area">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p class="upload-text">Click the button below to upload your CV.</p>
+                    <input type="file" name="file" id="file-input" class="file-input" accept=".pdf,.docx,.doc" required>
+                    <label for="file-input" class="choose-file-btn">
+                        <i class="fas fa-file-upload"></i> Select your CV
+                    </label>
                 </div>
-                <div id="file-selected" style="display: none;"></div>
+                
+                <div class="file-info" id="file-info">
+                    <div class="file-preview">
+                        <i class="file-type-icon" id="file-type-icon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="file-name"></span>
+                            <span class="file-size" id="file-size"></span>
+                        </div>
+                        <button type="button" class="remove-file" id="remove-file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="process-btn" id="process-btn">
+                        <i class="fas fa-cogs"></i> Process CV
+                    </button>
+                </div>
             </div>
-            <button type="submit" id="submit-btn" disabled>
-                <i class="fas fa-paper-plane"></i>
-                <span>Process CV</span>
-            </button>
         </form>
     </section>
 
     <!-- Features Section -->
     <section class="features-section">
-        <div class="feature-card animate-slide-up">
-            <div class="feature-icon">
-                <i class="fas fa-magic"></i>
-            </div>
+        <div class="feature-card">
+            <i class="fas fa-robot feature-icon"></i>
             <h3 class="feature-title">AI-Powered Analysis</h3>
-            <p class="feature-description">Our advanced AI algorithms extract key information from your CV with high accuracy.</p>
+            <p class="feature-description">Advanced algorithms extract and analyze key information from your CV with high accuracy.</p>
         </div>
-        <div class="feature-card animate-slide-up">
-            <div class="feature-icon">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h3 class="feature-title">Multiple Formats</h3>
-            <p class="feature-description">Support for PDF and DOCX file formats ensures compatibility with most CV documents.</p>
-        </div>
-        <div class="feature-card animate-slide-up">
-            <div class="feature-icon">
-                <i class="fas fa-briefcase"></i>
-            </div>
+        <div class="feature-card">
+            <i class="fas fa-bolt feature-icon"></i>
             <h3 class="feature-title">Fast Processing</h3>
-            <p class="feature-description">Get your structured CV data within seconds, saving time in the hiring process.</p>
+            <p class="feature-description">Get detailed analysis and insights within seconds.</p>
         </div>
-        
+        <div class="feature-card">
+            <i class="fas fa-shield-alt feature-icon"></i>
+            <h3 class="feature-title">Secure & Reliable</h3>
+            <p class="feature-description">Your data is processed securely and handled with utmost confidentiality.</p>
+        </div>
     </section>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-card">
-            <div class="loading-spinner"></div>
+            <div class="progress-container">
+                <div class="progress-ring">
+                    <svg class="progress-ring__circle" width="120" height="120">
+                        <circle class="progress-ring__circle-bg" cx="60" cy="60" r="54" />
+                        <circle class="progress-ring__circle-progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="progress-content">
+                        <div class="progress-percentage" id="progress-percentage">0%</div>
+                    </div>
+                </div>
+            </div>
             <p class="loading-text">Processing your CV...</p>
-            <p class="loading-subtext">This might take a few moments</p>
+            <div class="processing-steps">
+                <div class="step-item active">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reading Document</span>
+                </div>
+                <div class="step-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Extracting Data</span>
+                </div>
+                <div class="step-item">
+                    <i class="fas fa-file-word"></i>
+                    <span>Formatting Report</span>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- Success Message -->
-    <div class="success-message" id="success-message">
-        <i class="fas fa-check-circle"></i>
-        <span>CV processed successfully! Download starting...</span>
     </div>
 
     <!-- Footer -->
     <footer>
-        <div class="footer-pattern"></div>
         <div class="footer-content">
             <div class="footer-section">
                 <h3>About Sierra</h3>
-                <p>Sierra is a cutting-edge CV analysis tool designed exclusively for NAAS employees. It harnesses the power of AI to revolutionize our recruitment process, ensuring we identify and nurture top talent efficiently and objectively.</p>
+                <p>Sierra is an advanced CV analysis tool designed exclusively for NAAS employees. Leveraging cutting-edge AI technology, we help streamline the recruitment process and identify top talent effectively.</p>
             </div>
             <div class="footer-section">
-                <h3>Contact & Support</h3>
-                <p>Developed by <span class="developer-name">Khasim Akram Syed</span></p>
-                <p>For assistance or inquiries:</p>
-                <a href="mailto:it@naasgroup.com">
-                    <i class="fas fa-envelope"></i>
-                    it@naasgroup.com
-                </a>
-                <br>
-                <a href="tel:+971543648580">
-                    <i class="fas fa-phone"></i>
-                    +971 52 175 0894
-                </a>
+                <h3>Contact Us</h3>
+                <ul class="contact-info">
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>it@naasgroup.com</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>+971 52 175 0894</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-user"></i>
+                        <span>Developer: Khasim Akram Syed</span>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Sierra - NAAS CV Analyzer. All rights reserved. | For internal use only</p>
+        <div class="copyright">
+            <p>&copy; 2024 Sierra - NAAS CV Analyzer. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Theme Toggle with smooth transitions
-        const themeToggle = document.getElementById('theme-toggle');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        const root = document.documentElement;
+        const form = document.getElementById('upload-form');
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const fileTypeIcon = document.getElementById('file-type-icon');
+        const removeFile = document.getElementById('remove-file');
+        const loadingOverlay = document.getElementById('loading-overlay');
 
-        // Function to update theme with smooth transition
-        function setTheme(isDark) {
-            // Add transition class
-            root.style.setProperty('--transition-speed', '0.3s');
-            
-            // Set theme
-            root.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            
-            // Store preference
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            
-            // Remove transition after theme change
-            setTimeout(() => {
-                root.style.setProperty('--transition-speed', '0s');
-            }, 300);
-        }
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                const fileType = file.type;
+                const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+                
+                if (!validTypes.includes(fileType)) {
+                    alert('Please upload a PDF or Word document only.');
+                    fileInput.value = '';
+                    return;
+                }
 
-        // Initialize theme
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme) {
-            setTheme(storedTheme === 'dark');
-        } else {
-            setTheme(prefersDark.matches);
-        }
+                // Validate file size (max 30MB)
+                const maxSize = 30 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert('File size exceeds 30MB limit. Please choose a smaller file.');
+                    fileInput.value = '';
+                    return;
+                }
 
-        // Theme toggle click handler
-        themeToggle.addEventListener('click', () => {
-            const isDark = root.getAttribute('data-theme') === 'dark';
-            setTheme(!isDark);
-        });
+                // Update UI with file info
+                fileName.textContent = file.name;
+                fileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
 
-        // Listen for system theme changes
-        prefersDark.addEventListener('change', (e) => {
-            if (!localStorage.getItem('theme')) {
-                setTheme(e.matches);
+                // Set file type icon
+                if (fileType === 'application/pdf') {
+                    fileTypeIcon.className = 'fas fa-file-pdf file-type-icon pdf';
+                } else {
+                    fileTypeIcon.className = 'fas fa-file-word file-type-icon word';
+                }
+
+                // Show file info, hide upload area
+                uploadArea.style.display = 'none';
+                fileInfo.style.display = 'block';
             }
         });
 
-        // File Upload Handling with improved UX
-        // File Upload Handling with improved UX
-const form = document.getElementById('upload-form');
-const fileInput = document.getElementById('file-input');
-const uploadArea = document.getElementById('upload-area');
-const uploadContent = document.getElementById('upload-content');
-const fileSelected = document.getElementById('file-selected');
-const submitBtn = document.getElementById('submit-btn');
-const loadingOverlay = document.getElementById('loading-overlay');
-const successMessage = document.getElementById('success-message');
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function handleFiles(files) {
-    if (files.length > 0) {
-        const file = files[0];
-        const fileExtension = file.name.split('.').pop().toLowerCase();
-        
-        if (!['pdf', 'docx', 'doc'].includes(fileExtension)) {
-            alert('Please upload a PDF or Word document (DOCX/DOC) only.');
-            resetUpload();
-            return;
-        }
-
-        const maxSize = 30 * 1024 * 1024; // 10MB in bytes
-        if (file.size > maxSize) {
-            alert('File size exceeds 30MB limit. Please choose a smaller file.');
-            resetUpload();
-            return;
-        }
-
-        const fileIcon = fileExtension === 'pdf' ? 'fa-file-pdf' : 'fa-file-word';
-
-        fileSelected.innerHTML = `
-            <div class="file-selected animate-fade-in">
-                <i class="fas ${fileIcon} file-icon"></i>
-                <div class="file-info">
-                    <div class="file-name">${file.name}</div>
-                    <div class="file-size">${formatFileSize(file.size)}</div>
-                </div>
-                <button type="button" class="remove-file-btn" onclick="resetUpload(); event.stopPropagation();">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-
-        uploadContent.style.display = 'none';
-        fileSelected.style.display = 'block';
-        submitBtn.disabled = false;
-    }
-}
-
-function resetUpload() {
-    fileInput.value = '';
-    uploadContent.style.display = 'block';
-    fileSelected.style.display = 'none';
-    submitBtn.disabled = true;
-}
-
-// File input change handler
-fileInput.addEventListener('change', (e) => {
-    handleFiles(e.target.files);
-});
-
-// Prevent default drag behaviors
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    uploadArea.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    });
-});
-
-// Handle drag and drop visual feedback
-uploadArea.addEventListener('dragenter', () => uploadArea.classList.add('dragover'));
-uploadArea.addEventListener('dragover', () => uploadArea.classList.add('dragover'));
-uploadArea.addEventListener('dragleave', (e) => {
-    if (!uploadArea.contains(e.relatedTarget)) {
-        uploadArea.classList.remove('dragover');
-    }
-});
-uploadArea.addEventListener('drop', (e) => {
-    uploadArea.classList.remove('dragover');
-    handleFiles(e.dataTransfer.files);
-});
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(form);
-    const file = formData.get('file');
-    
-    // Disable submit button to prevent multiple submissions
-    submitBtn.disabled = true;
-    
-    // Validate file size (max 10MB)
-    const maxSize = 30 * 1024 * 1024; // 10MB in bytes
-    if (file.size > maxSize) {
-        alert('File size exceeds 30MB limit. Please choose a smaller file.');
-        submitBtn.disabled = false;
-        return;
-    }
-
-    // Show loading overlay with fade in
-    loadingOverlay.classList.add('show');
-    
-    try {
-        const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
+        // Remove file handler
+        removeFile.addEventListener('click', () => {
+            fileInput.value = '';
+            uploadArea.style.display = 'flex';
+            fileInfo.style.display = 'none';
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        // Form submit handler
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            loadingOverlay.classList.add('show');
+            
+            const progressCircle = document.querySelector('.progress-ring__circle-progress');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const steps = document.querySelectorAll('.step-item');
+            let progress = 0;
 
-        const blob = await response.blob();
-        const filename = response.headers.get('Content-Disposition')
-            ?.split('filename=')[1]
-            ?.replace(/"/g, '') || 'processed_cv.pdf';
+            // Set total duration to 90 seconds (1 minute and 30 seconds)
+            const totalDuration = 90000; // 90 seconds in milliseconds
+            const intervalDuration = 250; // Update every 250ms
+            const progressIncrement = 100 / (totalDuration / intervalDuration);
 
-        // Create download link
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = downloadUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        
-        // Cleanup
-        window.URL.revokeObjectURL(downloadUrl);
-        document.body.removeChild(a);
+            const progressInterval = setInterval(() => {
+                progress += progressIncrement;
+                
+                const offset = 339.292 * (1 - progress / 100);
+                progressCircle.style.strokeDashoffset = offset;
+                progressPercentage.textContent = `${Math.min(Math.round(progress), 100)}%`;
 
-        // Show success message
-        successMessage.classList.add('show');
-        setTimeout(() => {
-            successMessage.classList.remove('show');
-        }, 3000);
+                if (progress >= 33) steps[1].classList.add('active');
+                if (progress >= 66) steps[2].classList.add('active');
 
-        // Reset form with animation
-        resetUpload();
-        
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while processing the CV. Please try again.');
-    } finally {
-        // Hide loading overlay with fade out
-        loadingOverlay.classList.remove('show');
-        submitBtn.disabled = false;  // Re-enable submit button after process
-    }
-});
+                if (progress >= 100) clearInterval(progressInterval);
+            }, intervalDuration);
 
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
 
-        // Enhance accessibility
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                // Close any open overlays
-                loadingOverlay.classList.remove('show');
-                successMessage.classList.remove('show');
-            }
-        });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-        // Add smooth scroll behavior
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                // Once response is received, quickly complete the progress
+                progress = 100;
+                progressCircle.style.strokeDashoffset = 0;
+                progressPercentage.textContent = '100%';
+                steps.forEach(step => step.classList.add('active'));
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = downloadUrl;
+                a.download = response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'processed_cv.pdf';
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(downloadUrl);
+                document.body.removeChild(a);
+
+                setTimeout(() => {
+                    fileInput.value = '';
+                    uploadArea.style.display = 'flex';
+                    fileInfo.style.display = 'none';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing the CV. Please try again.');
+            } finally {
+                clearInterval(progressInterval);
+                setTimeout(() => {
+                    loadingOverlay.classList.remove('show');
+                    steps.forEach((step, index) => {
+                        if (index > 0) step.classList.remove('active');
                     });
-                }
-            });
+                }, 1000);
+            }
         });
-
-        // Add intersection observer for animations
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-slide-up');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements with animation classes
-        document.querySelectorAll('.feature-card, .upload-section, .footer-section').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Performance optimization: Debounce resize handler
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                // Update any responsive elements here if needed
-            }, 250);
-        });
-
-        // Add touch event handlers for mobile devices
-        if ('ontouchstart' in window) {
-            uploadArea.addEventListener('touchstart', (e) => {
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('touchend', (e) => {
-                uploadArea.classList.remove('dragover');
-            });
-        }
     </script>
 </body>
 </html>
+```
