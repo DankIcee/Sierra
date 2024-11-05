@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy all files
-COPY . .
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
 
 # Create and activate virtual environment
 RUN python -m venv /opt/venv
@@ -23,9 +23,15 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the rest of the application
+COPY . .
+
+# Create required directories
+RUN mkdir -p uploads outputs
+
 # Environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 
 # Command to run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+CMD gunicorn --bind 0.0.0.0:$PORT app:app
